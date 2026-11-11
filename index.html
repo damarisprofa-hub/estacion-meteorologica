@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estación Meteorológica IES La Torreta</title>
+<style>
+:root{--v:#00A69E;--vd:#007f78;--f:#f4faf9;--b:#dcebe8;--t:#34413f}
+*{box-sizing:border-box}body{margin:0;background:var(--f);color:var(--t);font-family:Arial,sans-serif}
+main{max-width:1120px;margin:24px auto;padding:0 16px 36px}
+header{background:var(--v);color:white;padding:24px;border-radius:14px}
+h1{font-size:clamp(22px,4vw,32px);margin:0 0 7px}header p{margin:0}
+#estado{font-size:12px;margin-top:14px}
+h2{font-size:21px;color:var(--vd);margin:25px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.card{background:white;border:1px solid var(--b);border-radius:12px;padding:17px 12px;text-align:center}
+.label{font-size:14px;color:#397d77;margin-bottom:10px}
+.value{font-size:clamp(25px,4vw,34px);font-weight:bold;color:var(--vd);overflow-wrap:anywhere}
+.unit{font-size:14px;font-weight:normal;color:#397d77}
+.note{font-size:11px;color:#60716e;margin-top:8px}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.chart{background:white;border:1px solid var(--b);border-radius:12px;padding:12px;min-width:0}
+.chart h3{color:var(--vd);font-size:15px;margin:2px 4px 9px}
+.chart iframe{width:100%;height:290px;border:0;display:block}
+footer{text-align:center;color:#60716e;font-size:12px;line-height:1.5;margin-top:22px}
+@media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.charts{grid-template-columns:1fr}.chart iframe{height:260px}main{margin:14px auto;padding:0 10px 24px}}
+</style></head><body><main>
+<header><h1>ESTACIÓN METEOROLÓGICA</h1><p>IES La Torreta · Elda</p><div id="estado">Conectando con la estación…</div></header>
+<h2>Condiciones actuales</h2>
+<section class="grid">
+<article class="card"><div class="label">Temperatura</div><div class="value"><span id="temperatura">--</span><span class="unit"> °C</span></div></article>
+<article class="card"><div class="label">Humedad</div><div class="value"><span id="humedad">--</span><span class="unit"> %</span></div></article>
+<article class="card"><div class="label">Presión atmosférica</div><div class="value"><span id="presion">--</span><span class="unit"> hPa</span></div></article>
+<article class="card"><div class="label">Velocidad del viento</div><div class="value"><span id="viento">--</span><span class="unit"> km/h</span></div></article>
+<article class="card"><div class="label">Dirección del viento</div><div class="value"><span id="direccion">--</span></div></article>
+<article class="card"><div class="label">Lluvia · últimos 5 min</div><div class="value"><span id="lluvia5">--</span><span class="unit"> mm</span></div></article>
+<article class="card"><div class="label">Radiación UV (RAW)</div><div class="value"><span id="uv">--</span></div><div class="note">Lectura RAW, no índice UV calibrado</div></article>
+<article class="card"><div class="label">Lluvia acumulada</div><div class="value"><span id="lluviaTotal">--</span><span class="unit"> mm</span></div><div class="note">Acumulado registrado por Arduino</div></article>
+</section>
+<h2>Evolución meteorológica</h2><section class="charts">
+<article class="chart"><h3>Temperatura</h3><iframe loading="lazy" title="Temperatura" src="https://thingspeak.mathworks.com/channels/3278487/charts/1?bgcolor=%23ffffff&color=%2300A69E&dynamic=true&days=1&title=&yaxis=Temperatura%20(%C2%B0C)&xaxis=Hora"></iframe></article>
+<article class="chart"><h3>Humedad</h3><iframe loading="lazy" title="Humedad" src="https://thingspeak.mathworks.com/channels/3278487/charts/2?bgcolor=%23ffffff&color=%2300A69E&dynamic=true&days=1&title=&yaxis=Humedad%20(%)&xaxis=Hora"></iframe></article>
+<article class="chart"><h3>Presión atmosférica</h3><iframe loading="lazy" title="Presión" src="https://thingspeak.mathworks.com/channels/3278487/charts/3?bgcolor=%23ffffff&color=%2300A69E&dynamic=true&days=1&title=&yaxis=Presion%20(hPa)&xaxis=Hora"></iframe></article>
+<article class="chart"><h3>Velocidad del viento</h3><iframe loading="lazy" title="Viento" src="https://thingspeak.mathworks.com/channels/3278487/charts/7?bgcolor=%23ffffff&color=%2300A69E&dynamic=true&days=1&title=&yaxis=Viento%20(km%2Fh)&xaxis=Hora"></iframe></article>
+<article class="chart"><h3>Lluvia · últimos 5 minutos</h3><iframe loading="lazy" title="Lluvia" src="https://thingspeak.mathworks.com/channels/3278487/charts/6?bgcolor=%23ffffff&color=%2300A69E&dynamic=true&days=1&title=&yaxis=Lluvia%20(mm)&xaxis=Hora"></iframe></article>
+<article class="chart"><h3>Radiación UV (RAW)</h3><iframe loading="lazy" title="UV" src="https://thingspeak.mathworks.com/channels/3278487/charts/4?bgcolor=%23ffffff&color=%2300A69E&dynamic=true&days=1&title=&yaxis=Lectura%20RAW&xaxis=Hora"></iframe></article>
+</section><footer>Proyecto educativo de observación meteorológica · IES La Torreta<br>Los datos se actualizan automáticamente cada minuto. Fuente: estación meteorológica del centro.</footer>
+</main>
+<script>
+const FEED_URL="https://api.thingspeak.com/channels/3278487/feeds/last.json";
+function poner(id,v,d=1){const e=document.getElementById(id);if(v===null||v===undefined||v===""){e.textContent="--";return;}const n=Number(v);e.textContent=Number.isFinite(n)?n.toFixed(d).replace(".",","):String(v);}
+async function actualizar(){const estado=document.getElementById("estado");try{const r=await fetch(FEED_URL,{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);const x=await r.json();poner("temperatura",x.field1,1);poner("humedad",x.field2,1);poner("presion",x.field3,1);poner("uv",x.field4,0);poner("lluviaTotal",x.field5,2);poner("lluvia5",x.field6,2);poner("viento",x.field7,1);document.getElementById("direccion").textContent=x.field8||"--";estado.textContent="Última lectura: "+new Date(x.created_at).toLocaleString("es-ES");}catch(e){estado.textContent="No se ha podido actualizar. Se volverá a intentar.";}}
+actualizar();setInterval(actualizar,60000);
+</script></body></html>
